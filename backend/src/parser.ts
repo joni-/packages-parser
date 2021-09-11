@@ -8,49 +8,47 @@
 
 type ParseResult = [string, string];
 
-export const parseName = (input: string): ParseResult => {
-  const i = input.indexOf(":");
-  const name = input.substring(0, i);
-  const rest = input.substring(i + 1);
+const parseUntil =
+  (target: string, failIfNoMatch = true) =>
+  (input: string): ParseResult => {
+    const i = input.indexOf(target);
 
+    if (i === -1 && !failIfNoMatch) {
+      return [input.trim(), ""];
+    } else if (i === -1 && failIfNoMatch) {
+      throw new Error(`No match for ${target} in ${input}`);
+    }
+
+    const value = input.substring(0, i);
+    const rest = input.substring(i + 1);
+    return [value, rest];
+  };
+
+const parseUntilNewLine = parseUntil("\n", false);
+
+export const parseName = (input: string): ParseResult => {
+  const [name, rest] = parseUntil(":")(input);
   // TODO: validate that name conforms the specification
   return [name, rest];
 };
 
 export const parseSimpleValue = (input: string): ParseResult => {
-  const i = input.indexOf("\n");
-
-  // Last line of paragraph will not have new line. Use the entire line as value.
-  if (i === -1) {
-    return [input.trim(), ""];
-  }
-
-  const value = input.substring(0, i).trim();
-  const rest = input.substring(i + 1);
-  return [value, rest];
+  const [value, rest] = parseUntilNewLine(input);
+  return [value.trim(), rest];
 };
 
 const isContinuationLine = (s: string) => s.length > 0 && s[0] === " ";
 
 export const parseMultilineValue = (input: string): ParseResult => {
-  const i = input.indexOf("\n");
-
-  // Last line of paragraph will not have new line. Use the entire line as value.
-  if (i === -1) {
-    return [input.trim(), ""];
-  }
-
-  // read until next line does not start with blank character
-  let value = input.substring(0, i).trim();
-  let rest = input.substring(i + 1);
+  let [value, rest] = parseUntilNewLine(input);
 
   if (isContinuationLine(rest)) {
     const [value2, rest2] = parseMultilineValue(rest);
-    value = value + "\n" + value2;
+    value = value.trim() + "\n" + value2;
     rest = rest2;
   }
 
-  return [value, rest];
+  return [value.trim(), rest];
 };
 
 export const parseParagraph = (paragraph: string): Record<string, string> => {
