@@ -1,4 +1,9 @@
-import { parseName, parseParagraph, parseSimpleValue } from "./parser";
+import {
+  parseMultilineValue,
+  parseName,
+  parseParagraph,
+  parseSimpleValue,
+} from "./parser";
 
 describe("parseName", () => {
   it("parses correct attribute name", () => {
@@ -11,6 +16,19 @@ describe("parseSimpleValue", () => {
   it("simple field", () => {
     const [value, _] = parseSimpleValue(" libws-commons-util-java\n");
     expect(value).toBe("libws-commons-util-java");
+  });
+});
+
+describe("parseMultilineValue", () => {
+  it("simple test", () => {
+    const input = ` Common utilities from the Apache Web Services Project
+ This is a small collection of utility classes, that allow high
+ performance XML processing based on SAX.\n`;
+
+    const [value, _] = parseMultilineValue(input);
+    expect(value).toBe(`Common utilities from the Apache Web Services Project
+This is a small collection of utility classes, that allow high
+performance XML processing based on SAX.`);
   });
 });
 

@@ -30,6 +30,29 @@ export const parseSimpleValue = (input: string): ParseResult => {
   return [value, rest];
 };
 
+const isContinuationLine = (s: string) => s.length > 0 && s[0] === " ";
+
+export const parseMultilineValue = (input: string): ParseResult => {
+  const i = input.indexOf("\n");
+
+  // Last line of paragraph will not have new line. Use the entire line as value.
+  if (i === -1) {
+    return [input.trim(), ""];
+  }
+
+  // read until next line does not start with blank character
+  let value = input.substring(0, i).trim();
+  let rest = input.substring(i + 1);
+
+  if (isContinuationLine(rest)) {
+    const [value2, rest2] = parseMultilineValue(rest);
+    value = value + "\n" + value2;
+    rest = rest2;
+  }
+
+  return [value, rest];
+};
+
 export const parseParagraph = (paragraph: string): Record<string, string> => {
   let output: Record<string, string> = {};
   let value = paragraph;
