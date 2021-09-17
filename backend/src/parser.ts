@@ -96,6 +96,11 @@ export const parseParagraph = (paragraph: string): Paragraph => {
     value = rest;
   }
 
+  const duplicates = findDuplicates(fields);
+  if (duplicates.length > 0) {
+    throw new Error(`Duplicate keys found: ${duplicates.join(", ")}`);
+  }
+
   // TODO: find a better way for finding the known fields without type casting..
   const pkg = fields.find((v) => v.name === "Package") as Field<string>;
   const description = fields.find(
@@ -103,7 +108,6 @@ export const parseParagraph = (paragraph: string): Paragraph => {
   ) as Field<Description>;
 
   // TODO:
-  // - check for duplicate keys
   // - handle comments
 
   return {
@@ -113,4 +117,19 @@ export const parseParagraph = (paragraph: string): Paragraph => {
       description: description.value.description,
     },
   };
+};
+
+const findDuplicates = (fields: Field<unknown>[]): string[] => {
+  const counts = fields
+    .map((v) => v.name)
+    .reduce((keys: Record<string, number>, k) => {
+      keys[k] = (keys[k] ?? 0) + 1;
+      return keys;
+    }, {});
+
+  const duplicateKeys = Object.entries(counts)
+    .filter(([_, count]) => count > 1)
+    .map(([k, _]) => k);
+
+  return duplicateKeys;
 };

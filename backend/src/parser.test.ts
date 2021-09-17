@@ -66,4 +66,18 @@ Homepage: http://ws.apache.org/commons/util/
       .toBe(`This is a small collection of utility classes, that allow high
 performance XML processing based on SAX.`);
   });
+
+  it("fails on duplicate keys", () => {
+    const paragraph = `
+Package: libws-commons-util-java
+Description: Common utilities from the Apache Web Services Project
+ This is a small collection of utility classes, that allow high
+ performance XML processing based on SAX.
+Package: duplicate key
+`.trim();
+
+    expect(() => {
+      parseParagraph(paragraph);
+    }).toThrow(new Error("Duplicate keys found: Package"));
+  });
 });
