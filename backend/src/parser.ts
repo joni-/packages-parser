@@ -133,3 +133,8 @@ const findDuplicates = (fields: Field<unknown>[]): string[] => {
 
   return duplicateKeys;
 };
+
+export const parseFile = (input: string): Paragraph[] => {
+  const parts = input.split("\n\n");
+  return parts.map(parseParagraph);
+};
