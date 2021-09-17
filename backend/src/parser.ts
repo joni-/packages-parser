@@ -5,7 +5,6 @@
  * try to parse desired value from the beginning of the input and return the parsed
  * value and the leftover input that can be fed to the next parser.
  */
-
 type ParseResult<T> = [T, string];
 type Parser<T> = (input: string) => ParseResult<T>;
 
@@ -74,29 +73,44 @@ interface Field<T> {
 }
 
 export const parseField = (
-  s: string
+  input: string
 ): [Field<string | Description>, string] => {
-  const [name, rest] = parseName(s);
+  const [name, rest] = parseName(input);
   const parseValue = PARSERS[name] ?? parseSimpleValue;
   const [value, rest2] = parseValue(rest);
   return [{ name, value }, rest2];
 };
 
-export const parseParagraph = (
-  paragraph: string
-): Record<string, string | Description> => {
-  let output: Record<string, string | Description> = {};
+interface Paragraph {
+  name: string;
+  description: Description;
+}
+
+export const parseParagraph = (paragraph: string): Paragraph => {
   let value = paragraph;
+  let fields: Field<string | Description>[] = [];
 
   while (value.trim().length > 0) {
-    const [{ name, value: fieldValue }, rest] = parseField(value);
-    output[name] = fieldValue;
+    const [field, rest] = parseField(value);
+    fields.push(field);
     value = rest;
   }
+
+  // TODO: find a better way for finding the known fields without type casting..
+  const pkg = fields.find((v) => v.name === "Package") as Field<string>;
+  const description = fields.find(
+    (v) => v.name === "Description"
+  ) as Field<Description>;
 
   // TODO:
   // - check for duplicate keys
   // - handle comments
 
-  return output;
+  return {
+    name: pkg.value,
+    description: {
+      synopsis: description.value.synopsis,
+      description: description.value.description,
+    },
+  };
 };

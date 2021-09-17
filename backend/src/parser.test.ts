@@ -49,25 +49,21 @@ Installed-Size: 101
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Architecture: all
 Version: 1.0.1-7
+Description: Common utilities from the Apache Web Services Project
+ This is a small collection of utility classes, that allow high
+ performance XML processing based on SAX.
 Original-Maintainer: Debian Java Maintainers <pkg-java-maintainers@lists.alioth.debian.org>
 Homepage: http://ws.apache.org/commons/util/
 `.trim();
 
     const result = parseParagraph(paragraph);
 
-    expect(result["Package"]).toBe("libws-commons-util-java");
-    expect(result["Status"]).toBe("install ok installed");
-    expect(result["Priority"]).toBe("optional");
-    expect(result["Section"]).toBe("java");
-    expect(result["Installed-Size"]).toBe("101");
-    expect(result["Maintainer"]).toBe(
-      "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>"
+    expect(result.name).toBe("libws-commons-util-java");
+    expect(result.description.synopsis).toBe(
+      "Common utilities from the Apache Web Services Project"
     );
-    expect(result["Architecture"]).toBe("all");
-    expect(result["Version"]).toBe("1.0.1-7");
-    expect(result["Original-Maintainer"]).toBe(
-      "Debian Java Maintainers <pkg-java-maintainers@lists.alioth.debian.org>"
-    );
-    expect(result["Homepage"]).toBe("http://ws.apache.org/commons/util/");
+    expect(result.description.description)
+      .toBe(`This is a small collection of utility classes, that allow high
+performance XML processing based on SAX.`);
   });
 });
