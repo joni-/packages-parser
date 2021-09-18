@@ -2,6 +2,11 @@
 
 exports[`PackageDetails renders page without changes 1`] = `
 <div>
+  <a
+    href="/"
+  >
+    Back to packages listing
+  </a>
   <h1>
     libws-commons-util-java
   </h1>

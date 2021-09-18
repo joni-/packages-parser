@@ -10,6 +10,7 @@ const PackageDetails = (props: Props) => {
   const { name, description } = props.paragraph;
   return (
     <div>
+      <a href="/">Back to packages listing</a>
       <h1>{name}</h1>
       <h3>{description.synopsis}</h3>
       <p>{description.description}</p>
