@@ -76,7 +76,11 @@ export const parseField = (
   input: string
 ): [Field<string | Description>, string] => {
   const [name, rest] = parseName(input);
-  const parseValue = PARSERS[name] ?? parseSimpleValue;
+  const [_, nextLine] = parseUntilNewLine(rest);
+  const defaultParser = isContinuationLine(nextLine)
+    ? parseMultilineValue
+    : parseSimpleValue;
+  const parseValue = PARSERS[name] ?? defaultParser;
   const [value, rest2] = parseValue(rest);
   return [{ name, value }, rest2];
 };

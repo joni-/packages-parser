@@ -60,6 +60,10 @@ Description: Common utilities from the Apache Web Services Project
  performance XML processing based on SAX.
 Original-Maintainer: Debian Java Maintainers <pkg-java-maintainers@lists.alioth.debian.org>
 Homepage: http://ws.apache.org/commons/util/
+Conffiles:
+ /etc/modprobe.d/blacklist-ath_pci.conf d1da9bb08c2b0f56f3be93fd0e37946b
+ /etc/modprobe.d/blacklist-firewire.conf 9cc07a17e8e64f9cd35ff59c29debe69
+ /etc/modprobe.d/blacklist-framebuffer.conf 96f2f501cc646b598263693c8976ddd1
 `.trim();
 
     const result = parseParagraph(paragraph);
