@@ -1,6 +1,6 @@
 module.exports = {
   roots: [
-    "<rootDir>/src"
+    "<rootDir>/"
   ],
   testMatch: [
     "**/__tests__/**/*.+(ts|tsx|js)",
@@ -14,4 +14,5 @@ module.exports = {
       tsconfig: "tsconfig.json",
     },
   },
+  testPathIgnorePatterns: ["build/", "node_modules/", "dist/", ".next/"]
 }
