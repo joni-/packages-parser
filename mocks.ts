@@ -1,4 +1,4 @@
-import { Package } from "./parser/parser";
+import { Package } from "./parser/types";
 
 export const package1: Package = {
   name: "libws-commons-util-java",

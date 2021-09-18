@@ -1,6 +1,7 @@
 import { readFile as legacyReadFile } from "fs";
 import { promisify } from "util";
-import { Package, parseFile } from "./parser";
+import { parseFile } from "./parser";
+import { Package } from "./types";
 
 // readFile from fs/promises would be preferred but for some reason next.js
 // had problems with it as it tried to import it client-side.

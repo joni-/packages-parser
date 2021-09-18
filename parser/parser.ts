@@ -5,9 +5,26 @@
  * try to parse desired value from the beginning of the input and return the parsed
  * value and the leftover input that can be fed to the next parser.
  */
+import { Description, Package } from "./types";
 
 type ParseResult<T> = [T, string];
 type Parser<T> = (input: string) => ParseResult<T>;
+
+interface Dependency {
+  name: string;
+  alternatives: string[];
+}
+
+interface Field<T> {
+  name: string;
+  value: T;
+}
+
+interface Paragraph {
+  name: string;
+  description: Description;
+  depends: Dependency[];
+}
 
 const parseUntil =
   (target: string, failIfNoMatch = true) =>
@@ -25,7 +42,7 @@ const parseUntil =
     return [value, rest];
   };
 
-const parseUntilNewLine = parseUntil("\n", false);
+const parseLine = parseUntil("\n", false);
 
 export const parseName = (input: string): ParseResult<string> => {
   const [name, rest] = parseUntil(":")(input);
@@ -34,14 +51,14 @@ export const parseName = (input: string): ParseResult<string> => {
 };
 
 const parseSimpleValue = (input: string): ParseResult<string> => {
-  const [value, rest] = parseUntilNewLine(input);
+  const [value, rest] = parseLine(input);
   return [value.trim(), rest];
 };
 
 const isContinuationLine = (s: string) => s.length > 0 && s[0] === " ";
 
 const parseMultilineValue = (input: string): ParseResult<string> => {
-  let [value, rest] = parseUntilNewLine(input);
+  let [value, rest] = parseLine(input);
 
   if (isContinuationLine(rest)) {
     const [value2, rest2] = parseMultilineValue(rest);
@@ -52,21 +69,11 @@ const parseMultilineValue = (input: string): ParseResult<string> => {
   return [value.trim(), rest];
 };
 
-export interface Description {
-  synopsis: string;
-  description: string;
-}
-
 const parseDescription = (input: string): ParseResult<Description> => {
   const [value, rest] = parseMultilineValue(input);
-  const [synopsis, description] = parseUntilNewLine(value);
+  const [synopsis, description] = parseLine(value);
   return [{ synopsis, description }, rest];
 };
-
-interface Dependency {
-  name: string;
-  alternatives: string[];
-}
 
 const trim = (s: string) => s.trim();
 const removeVersion = (s: string) => s.split(" ")[0];
@@ -107,16 +114,11 @@ const PARSERS: Record<string, Parser<Description> | Parser<Dependency[]>> = {
   Depends: parseDependencies,
 };
 
-interface Field<T> {
-  name: string;
-  value: T;
-}
-
 export const parseField = (
   input: string
 ): [Field<string | Description | Dependency[]>, string] => {
   const [name, rest] = parseName(input);
-  const [_, nextLine] = parseUntilNewLine(rest);
+  const [_, nextLine] = parseLine(rest);
   const defaultParser = isContinuationLine(nextLine)
     ? parseMultilineValue
     : parseSimpleValue;
@@ -124,17 +126,6 @@ export const parseField = (
   const [value, rest2] = parseValue(rest);
   return [{ name, value }, rest2];
 };
-
-export interface Reference {
-  name: string;
-  installed: boolean;
-  alternatives: Omit<Reference, "alternatives">[];
-}
-interface Paragraph {
-  name: string;
-  description: Description;
-  depends: Dependency[];
-}
 
 export const parseParagraph = (paragraph: string): Paragraph => {
   let value = paragraph;
@@ -232,10 +223,3 @@ export const parseFile = (input: string): Package[] => {
       })) ?? [],
   }));
 };
-
-export interface Package {
-  name: string;
-  description: Description;
-  depends: Reference[];
-  dependants: Reference[];
-}

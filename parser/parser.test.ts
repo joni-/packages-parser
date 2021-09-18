@@ -1,12 +1,11 @@
 import {
-  Description,
-  Package,
   parseDependencies,
   parseField,
   parseFile,
   parseName,
   parseParagraph,
 } from "./parser";
+import { Description, Package } from "./types";
 
 describe("parseName", () => {
   it("parses correct attribute name", () => {

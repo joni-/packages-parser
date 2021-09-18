@@ -1,5 +1,5 @@
 import type { GetServerSideProps, NextPage } from "next";
-import { Package } from "../parser/parser";
+import { Package } from "../parser/types";
 import { listPackages } from "../parser/reader";
 
 interface Props {

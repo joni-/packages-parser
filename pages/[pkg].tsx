@@ -1,4 +1,4 @@
-import { Package, Reference } from "../parser/parser";
+import { Package, Reference } from "../parser/types";
 import { GetServerSideProps } from "next";
 import { findPackage } from "../parser/reader";
 
