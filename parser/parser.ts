@@ -85,9 +85,18 @@ export const parseField = (
   return [{ name, value }, rest2];
 };
 
+export interface Reference {
+  name: string;
+  installed: boolean;
+
+  // maybe only top level dependency should have alternatives
+  alternatives: Reference[];
+}
 export interface Paragraph {
   name: string;
   description: Description;
+  depends: Reference[];
+  dependants: Reference[];
 }
 
 export const parseParagraph = (paragraph: string): Paragraph => {
@@ -120,6 +129,8 @@ export const parseParagraph = (paragraph: string): Paragraph => {
       synopsis: description.value.synopsis,
       description: description.value.description,
     },
+    depends: [],
+    dependants: [],
   };
 };
 

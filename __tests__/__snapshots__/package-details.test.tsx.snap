@@ -1,6 +1,233 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PackageDetails renders page without changes 1`] = `
+exports[`PackageDetails with dependants only 1`] = `
+<div>
+  <a
+    href="/"
+  >
+    Back to packages listing
+  </a>
+  <h1>
+    python-pkg-resources
+  </h1>
+  <h3>
+    Package Discovery and Resource Access using pkg_resources
+  </h3>
+  <p>
+    The pkg_resources module provides an API for Python libraries to
+access their resource files, and for extensible applications and
+frameworks to automatically discover plugins.  It also provides
+runtime support for using C extensions that are inside zipfile-format
+eggs, support for merging packages that have separately-distributed
+modules or subpackages, and APIs for managing Python's current
+"working set" of active packages.
+  </p>
+  <h4>
+    Dependants
+  </h4>
+  <ul>
+    <li>
+      libtext-wrapi18n-perl
+       
+    </li>
+    <li>
+      <a
+        href="/java-common"
+      >
+        java-common
+      </a>
+       
+      (
+      <span>
+        <a
+          href="/debconf-2.0"
+        >
+          debconf-2.0
+        </a>
+      </span>
+      )
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`PackageDetails with dependencies and dependants 1`] = `
+<div>
+  <a
+    href="/"
+  >
+    Back to packages listing
+  </a>
+  <h1>
+    python-pkg-resources
+  </h1>
+  <h3>
+    Package Discovery and Resource Access using pkg_resources
+  </h3>
+  <p>
+    The pkg_resources module provides an API for Python libraries to
+access their resource files, and for extensible applications and
+frameworks to automatically discover plugins.  It also provides
+runtime support for using C extensions that are inside zipfile-format
+eggs, support for merging packages that have separately-distributed
+modules or subpackages, and APIs for managing Python's current
+"working set" of active packages.
+  </p>
+  <h4>
+    Depends on
+  </h4>
+  <ul>
+    <li>
+      <a
+        href="/tcpd"
+      >
+        tcpd
+      </a>
+       
+    </li>
+    <li>
+      libbsf-java
+       
+    </li>
+    <li>
+      <a
+        href="/libaspectj-java"
+      >
+        libaspectj-java
+      </a>
+       
+    </li>
+    <li>
+      debconf
+       
+      (
+      <span>
+        <a
+          href="/debconf-2.0"
+        >
+          debconf-2.0
+        </a>
+        , 
+      </span>
+      <span>
+        libaspectj-java
+        , 
+      </span>
+      <span>
+        <a
+          href="/tcpd"
+        >
+          tcpd
+        </a>
+      </span>
+      )
+    </li>
+  </ul>
+  <h4>
+    Dependants
+  </h4>
+  <ul>
+    <li>
+      libtext-wrapi18n-perl
+       
+    </li>
+    <li>
+      <a
+        href="/java-common"
+      >
+        java-common
+      </a>
+       
+      (
+      <span>
+        <a
+          href="/debconf-2.0"
+        >
+          debconf-2.0
+        </a>
+      </span>
+      )
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`PackageDetails with dependencies only 1`] = `
+<div>
+  <a
+    href="/"
+  >
+    Back to packages listing
+  </a>
+  <h1>
+    python-pkg-resources
+  </h1>
+  <h3>
+    Package Discovery and Resource Access using pkg_resources
+  </h3>
+  <p>
+    The pkg_resources module provides an API for Python libraries to
+access their resource files, and for extensible applications and
+frameworks to automatically discover plugins.  It also provides
+runtime support for using C extensions that are inside zipfile-format
+eggs, support for merging packages that have separately-distributed
+modules or subpackages, and APIs for managing Python's current
+"working set" of active packages.
+  </p>
+  <h4>
+    Depends on
+  </h4>
+  <ul>
+    <li>
+      <a
+        href="/tcpd"
+      >
+        tcpd
+      </a>
+       
+    </li>
+    <li>
+      libbsf-java
+       
+    </li>
+    <li>
+      <a
+        href="/libaspectj-java"
+      >
+        libaspectj-java
+      </a>
+       
+    </li>
+    <li>
+      debconf
+       
+      (
+      <span>
+        <a
+          href="/debconf-2.0"
+        >
+          debconf-2.0
+        </a>
+        , 
+      </span>
+      <span>
+        libaspectj-java
+        , 
+      </span>
+      <span>
+        <a
+          href="/tcpd"
+        >
+          tcpd
+        </a>
+      </span>
+      )
+    </li>
+  </ul>
+</div>
+`;
+
+exports[`PackageDetails without dependencies or dependants 1`] = `
 <div>
   <a
     href="/"
