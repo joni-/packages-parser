@@ -1,6 +1,6 @@
 import type { GetServerSideProps, NextPage } from "next";
-import { paragraphs } from "../mocks";
 import { Paragraph } from "../parser/parser";
+import { listPackages } from "../parser/reader";
 
 interface Props {
   paragraphs: Paragraph[];
@@ -24,6 +24,7 @@ const PackageListing: NextPage<Props> = (props) => {
 export default PackageListing;
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  const paragraphs = await listPackages();
   return {
     props: { paragraphs },
   };

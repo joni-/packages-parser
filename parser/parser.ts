@@ -5,6 +5,7 @@
  * try to parse desired value from the beginning of the input and return the parsed
  * value and the leftover input that can be fed to the next parser.
  */
+
 type ParseResult<T> = [T, string];
 type Parser<T> = (input: string) => ParseResult<T>;
 
@@ -115,10 +116,16 @@ export const parseParagraph = (paragraph: string): Paragraph => {
   }
 
   // TODO: find a better way for finding the known fields without type casting..
-  const pkg = fields.find((v) => v.name === "Package") as Field<string>;
+  const pkg = fields.find((v) => v.name === "Package") as
+    | Field<string>
+    | undefined;
   const description = fields.find(
     (v) => v.name === "Description"
   ) as Field<Description>;
+
+  if (!pkg) {
+    throw new Error("Missing Package definition: " + paragraph);
+  }
 
   // TODO:
   // - handle comments
@@ -151,5 +158,9 @@ const findDuplicates = (fields: Field<unknown>[]): string[] => {
 
 export const parseFile = (input: string): Paragraph[] => {
   const parts = input.split("\n\n");
-  return parts.map(parseParagraph);
+  const data = parts
+    .filter((part) => part.trim().length > 0)
+    .map(parseParagraph);
+  data.sort((a, b) => a.name.localeCompare(b.name));
+  return data;
 };

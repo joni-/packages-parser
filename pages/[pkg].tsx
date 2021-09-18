@@ -1,6 +1,6 @@
 import { Paragraph, Reference } from "../parser/parser";
-import { paragraph2 } from "../mocks";
 import { GetServerSideProps } from "next";
+import { findPackage } from "../parser/reader";
 
 interface Props {
   paragraph: Paragraph;
@@ -67,8 +67,19 @@ const PackageDetails = (props: Props) => {
 
 export default PackageDetails;
 
-export const getServerSideProps: GetServerSideProps<Props> = async () => {
+export const getServerSideProps: GetServerSideProps<Props> = async (
+  context
+) => {
+  const { pkg } = context.query;
+
+  if (typeof pkg !== "string") {
+    return {
+      notFound: true,
+    };
+  }
+
+  const paragraph = await findPackage(pkg);
   return {
-    props: { paragraph: paragraph2 },
+    props: { paragraph },
   };
 };
