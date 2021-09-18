@@ -93,8 +93,7 @@ Package: duplicate key
 });
 
 describe("parseFile", () => {
-  it("smoke test", () => {
-    const input = `Package: libws-commons-util-java
+  const input = `Package: libws-commons-util-java
 Status: install ok installed
 Priority: optional
 Section: java
@@ -132,34 +131,48 @@ Description: Package Discovery and Resource Access using pkg_resources
   "working set" of active packages.
 Original-Maintainer: Matthias Klose <doko@debian.org>
 Homepage: http://packages.python.org/distribute
-Python-Version: 2.6, 2.7`;
+Python-Version: 2.6, 2.7
 
+Package: lsb-release
+Status: install ok installed
+Multi-Arch: foreign
+Priority: extra
+Section: misc
+Installed-Size: 111
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+Architecture: all
+Source: lsb
+Version: 4.0-0ubuntu20.2
+Depends: python2.7, python (>= 2.7.1-0ubuntu2), python (<< 2.8)
+Recommends: apt
+Suggests: lsb
+Description: Linux Standard Base version reporting utility
+ The Linux Standard Base (http://www.linuxbase.org/) is a standard
+ core system that third-party applications written for Linux can
+ depend upon.
+ .
+ The lsb-release command is a simple tool to help identify the Linux
+ distribution being used and its compliance with the Linux Standard Base.
+ LSB conformance will not be reported unless the required metapackages are
+ installed.
+ .
+ While it is intended for use by LSB packages, this command may also
+ be useful for programmatically distinguishing between a pure Debian
+ installation and derived distributions.
+Homepage: http://www.linux-foundation.org/en/LSB
+Original-Maintainer: Chris Lawrence <lawrencc@debian.org>
+`;
+  it("orders packages by name", () => {
     const result = parseFile(input);
 
-    expect(result.length).toBe(2);
+    expect(result.length).toBe(3);
 
     const p1 = result[0];
     const p2 = result[1];
+    const p3 = result[2];
 
     expect(p1.name).toBe("libws-commons-util-java");
-    expect(p1.description.synopsis).toBe(
-      "Common utilities from the Apache Web Services Project"
-    );
-    expect(p1.description.description)
-      .toBe(`This is a small collection of utility classes, that allow high
-performance XML processing based on SAX.`);
-
-    expect(p2.name).toBe("python-pkg-resources");
-    expect(p2.description.synopsis).toBe(
-      "Package Discovery and Resource Access using pkg_resources"
-    );
-    expect(p2.description.description)
-      .toBe(`The pkg_resources module provides an API for Python libraries to
-access their resource files, and for extensible applications and
-frameworks to automatically discover plugins.  It also provides
-runtime support for using C extensions that are inside zipfile-format
-eggs, support for merging packages that have separately-distributed
-modules or subpackages, and APIs for managing Python's current
-"working set" of active packages.`);
+    expect(p2.name).toBe("lsb-release");
+    expect(p3.name).toBe("python-pkg-resources");
   });
 });

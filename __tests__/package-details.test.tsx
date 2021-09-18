@@ -1,33 +1,33 @@
 import React from "react";
 import renderer from "react-test-renderer";
-import { paragraph1, paragraph2 } from "../mocks";
+import { package1, package2 } from "../mocks";
 import PackageDetails from "../pages/[pkg]";
 
 describe("PackageDetails", () => {
   it("without dependencies or dependants", () => {
     const tree = renderer
-      .create(<PackageDetails paragraph={paragraph1} />)
+      .create(<PackageDetails packages={package1} />)
       .toJSON();
     expect(tree).toMatchSnapshot();
   });
 
   it("with dependencies and dependants", () => {
     const tree = renderer
-      .create(<PackageDetails paragraph={paragraph2} />)
+      .create(<PackageDetails packages={package2} />)
       .toJSON();
     expect(tree).toMatchSnapshot();
   });
 
   it("with dependencies only", () => {
     const tree = renderer
-      .create(<PackageDetails paragraph={{ ...paragraph2, dependants: [] }} />)
+      .create(<PackageDetails packages={{ ...package2, dependants: [] }} />)
       .toJSON();
     expect(tree).toMatchSnapshot();
   });
 
   it("with dependants only", () => {
     const tree = renderer
-      .create(<PackageDetails paragraph={{ ...paragraph2, depends: [] }} />)
+      .create(<PackageDetails packages={{ ...package2, depends: [] }} />)
       .toJSON();
     expect(tree).toMatchSnapshot();
   });

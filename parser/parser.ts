@@ -89,11 +89,9 @@ export const parseField = (
 export interface Reference {
   name: string;
   installed: boolean;
-
-  // maybe only top level dependency should have alternatives
-  alternatives: Reference[];
+  alternatives: Omit<Reference, "alternatives">[];
 }
-export interface Paragraph {
+interface Paragraph {
   name: string;
   description: Description;
   depends: Reference[];
@@ -156,7 +154,7 @@ const findDuplicates = (fields: Field<unknown>[]): string[] => {
   return duplicateKeys;
 };
 
-export const parseFile = (input: string): Paragraph[] => {
+export const parseFile = (input: string): Package[] => {
   const parts = input.split("\n\n");
   const data = parts
     .filter((part) => part.trim().length > 0)
@@ -164,3 +162,10 @@ export const parseFile = (input: string): Paragraph[] => {
   data.sort((a, b) => a.name.localeCompare(b.name));
   return data;
 };
+
+export interface Package {
+  name: string;
+  description: Description;
+  depends: Reference[];
+  dependants: Reference[];
+}

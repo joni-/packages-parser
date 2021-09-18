@@ -1,16 +1,15 @@
 import { readFile as legacyReadFile } from "fs";
 import { promisify } from "util";
-import { Paragraph, parseFile } from "./parser";
+import { Package, parseFile } from "./parser";
 
 // readFile from fs/promises would be preferred but for some reason next.js
 // had problems with it as it tried to import it client-side.
 const readFile = promisify(legacyReadFile);
 
-let cache: Paragraph[] | null = null;
+let cache: Package[] | null = null;
 
-export const listPackages = async (): Promise<Paragraph[]> => {
+export const listPackages = async (): Promise<Package[]> => {
   if (cache !== null) {
-    console.log("serving from cache");
     return cache;
   }
 
@@ -20,9 +19,9 @@ export const listPackages = async (): Promise<Paragraph[]> => {
   return cache;
 };
 
-export const findPackage = async (name: string): Promise<Paragraph> => {
-  const paragraphs = await listPackages();
-  const value = paragraphs.find((v) => v.name === name);
+export const findPackage = async (name: string): Promise<Package> => {
+  const packages = await listPackages();
+  const value = packages.find((v) => v.name === name);
 
   if (!value) {
     throw new Error(`Package ${name} not found.`);

@@ -1,12 +1,16 @@
-import { Paragraph, Reference } from "../parser/parser";
+import { Package, Reference } from "../parser/parser";
 import { GetServerSideProps } from "next";
 import { findPackage } from "../parser/reader";
 
 interface Props {
-  paragraph: Paragraph;
+  packages: Package;
 }
 
-const Alternatives = ({ alternatives }: { alternatives: Reference[] }) => {
+const Alternatives = ({
+  alternatives,
+}: {
+  alternatives: Reference["alternatives"];
+}) => {
   if (alternatives.length === 0) {
     return null;
   }
@@ -52,7 +56,7 @@ const References = ({
 };
 
 const PackageDetails = (props: Props) => {
-  const { name, description, depends, dependants } = props.paragraph;
+  const { name, description, depends, dependants } = props.packages;
   return (
     <div>
       <a href="/">Back to packages listing</a>
@@ -78,8 +82,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     };
   }
 
-  const paragraph = await findPackage(pkg);
+  const packages = await findPackage(pkg);
   return {
-    props: { paragraph },
+    props: { packages },
   };
 };

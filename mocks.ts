@@ -1,6 +1,6 @@
-import { Paragraph } from "./parser/parser";
+import { Package } from "./parser/parser";
 
-export const paragraph1: Paragraph = {
+export const package1: Package = {
   name: "libws-commons-util-java",
   description: {
     synopsis: "Common utilities from the Apache Web Services Project",
@@ -11,7 +11,7 @@ performance XML processing based on SAX.`,
   dependants: [],
 };
 
-export const paragraph2: Paragraph = {
+export const package2: Package = {
   name: "python-pkg-resources",
   description: {
     synopsis: "Package Discovery and Resource Access using pkg_resources",
@@ -31,9 +31,9 @@ modules or subpackages, and APIs for managing Python's current
       name: "debconf",
       installed: false,
       alternatives: [
-        { name: "debconf-2.0", installed: true, alternatives: [] },
-        { name: "libaspectj-java", installed: false, alternatives: [] },
-        { name: "tcpd", installed: true, alternatives: [] },
+        { name: "debconf-2.0", installed: true },
+        { name: "libaspectj-java", installed: false },
+        { name: "tcpd", installed: true },
       ],
     },
   ],
@@ -42,11 +42,9 @@ modules or subpackages, and APIs for managing Python's current
     {
       name: "java-common",
       installed: true,
-      alternatives: [
-        { name: "debconf-2.0", installed: true, alternatives: [] },
-      ],
+      alternatives: [{ name: "debconf-2.0", installed: true }],
     },
   ],
 };
 
-export const paragraphs: Paragraph[] = [paragraph1, paragraph2];
+export const packages: Package[] = [package1, package2];
