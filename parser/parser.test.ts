@@ -1,5 +1,7 @@
 import {
   Description,
+  Package,
+  parseDependencies,
   parseField,
   parseFile,
   parseName,
@@ -40,6 +42,63 @@ describe("parseField", () => {
       expect(description.description)
         .toBe(`This is a small collection of utility classes, that allow high
 performance XML processing based on SAX.`);
+    });
+  });
+});
+
+describe("parseDependencies", () => {
+  describe("without alternatives", () => {
+    it("single dependency", () => {
+      const [value, _] = parseDependencies(" debconf (>= 0.5) ");
+      expect(value).toStrictEqual([{ name: "debconf", alternatives: [] }]);
+    });
+
+    it("multiple dependencies", () => {
+      const [value, _] = parseDependencies(
+        " bsh (= 2.0b4-12build1), libgcj-common (>> 1:4.1.1-13), libc6 (>= 2.2.5), libgcc1 (>= 1:4.1.1), libgcj-bc (>= 4.4.5-1~)"
+      );
+      expect(value).toStrictEqual([
+        { name: "bsh", alternatives: [] },
+        { name: "libc6", alternatives: [] },
+        { name: "libgcc1", alternatives: [] },
+        { name: "libgcj-bc", alternatives: [] },
+        { name: "libgcj-common", alternatives: [] },
+      ]);
+    });
+  });
+
+  describe("with alternatives", () => {
+    it("single dependency", () => {
+      const [value, _] = parseDependencies(
+        " default-jre-headless | java2-runtime-headless | java5-runtime-headless | java6-runtime-headless "
+      );
+      expect(value).toStrictEqual([
+        {
+          name: "default-jre-headless",
+          alternatives: [
+            "java2-runtime-headless",
+            "java5-runtime-headless",
+            "java6-runtime-headless",
+          ],
+        },
+      ]);
+    });
+
+    it("multiple dependencies", () => {
+      const [value, _] = parseDependencies(
+        " default-jre-headless | java2-runtime-headless | java5-runtime-headless | java6-runtime-headless,bsh (= 2.0b4-12build1) "
+      );
+      expect(value).toStrictEqual([
+        { name: "bsh", alternatives: [] },
+        {
+          name: "default-jre-headless",
+          alternatives: [
+            "java2-runtime-headless",
+            "java5-runtime-headless",
+            "java6-runtime-headless",
+          ],
+        },
+      ]);
     });
   });
 });
@@ -143,7 +202,7 @@ Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 Architecture: all
 Source: lsb
 Version: 4.0-0ubuntu20.2
-Depends: python2.7, python (>= 2.7.1-0ubuntu2), python (<< 2.8)
+Depends: python2.7, libc, python (>= 2.7.1-0ubuntu2), python (<< 2.8)
 Recommends: apt
 Suggests: lsb
 Description: Linux Standard Base version reporting utility
@@ -162,17 +221,33 @@ Description: Linux Standard Base version reporting utility
 Homepage: http://www.linux-foundation.org/en/LSB
 Original-Maintainer: Chris Lawrence <lawrencc@debian.org>
 `;
-  it("orders packages by name", () => {
+
+  let p1: Package;
+  let p2: Package;
+  let p3: Package;
+
+  beforeEach(() => {
     const result = parseFile(input);
-
     expect(result.length).toBe(3);
+    p1 = result[0];
+    p2 = result[1];
+    p3 = result[2];
+  });
 
-    const p1 = result[0];
-    const p2 = result[1];
-    const p3 = result[2];
-
+  it("sorts packages by name", () => {
     expect(p1.name).toBe("libws-commons-util-java");
     expect(p2.name).toBe("lsb-release");
     expect(p3.name).toBe("python-pkg-resources");
+  });
+
+  it("sorts dependencies by name", () => {
+    const getDependencyNames = (p: Package) => p.depends.map((v) => v.name);
+    expect(getDependencyNames(p1)).toStrictEqual([]);
+    expect(getDependencyNames(p2)).toStrictEqual([
+      "libc",
+      "python",
+      "python2.7",
+    ]);
+    expect(getDependencyNames(p3)).toStrictEqual(["python"]);
   });
 });

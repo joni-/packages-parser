@@ -63,9 +63,48 @@ const parseDescription = (input: string): ParseResult<Description> => {
   return [{ synopsis, description }, rest];
 };
 
+interface Dependency {
+  name: string;
+  alternatives: string[];
+}
+
+const trim = (s: string) => s.trim();
+const removeVersion = (s: string) => s.split(" ")[0];
+
+// note: if there are duplicated values, keeps the last occurrence
+const uniqBy = <T>(getKey: (v: T) => string, input: T[]): T[] => {
+  const xs = input.reduce((acc: Record<string, T>, current) => {
+    const k = getKey(current);
+    acc[k] = current;
+    return acc;
+  }, {});
+  return Object.values(xs);
+};
+
+export const parseDependencies = (input: string): ParseResult<Dependency[]> => {
+  const [value, rest] = parseSimpleValue(input);
+
+  const depends = value
+    .split(",")
+    .map((pkg) => {
+      const alternatives = pkg.split("|").map(trim);
+      const name = alternatives[0];
+      return { name, alternatives: alternatives.slice(1) };
+    })
+    .map((pkg) => ({
+      name: removeVersion(pkg.name),
+      alternatives: pkg.alternatives.map(removeVersion),
+    }));
+
+  const xs = uniqBy((v) => v.name, depends);
+  const sorted = xs.sort((a, b) => a.name.localeCompare(b.name));
+  return [sorted, rest];
+};
+
 // define fields that use other parser than parseSimpleValue
-const PARSERS: Record<string, Parser<Description>> = {
+const PARSERS: Record<string, Parser<Description> | Parser<Dependency[]>> = {
   Description: parseDescription,
+  Depends: parseDependencies,
 };
 
 interface Field<T> {
@@ -75,7 +114,7 @@ interface Field<T> {
 
 export const parseField = (
   input: string
-): [Field<string | Description>, string] => {
+): [Field<string | Description | Dependency[]>, string] => {
   const [name, rest] = parseName(input);
   const [_, nextLine] = parseUntilNewLine(rest);
   const defaultParser = isContinuationLine(nextLine)
@@ -94,13 +133,12 @@ export interface Reference {
 interface Paragraph {
   name: string;
   description: Description;
-  depends: Reference[];
-  dependants: Reference[];
+  depends: Dependency[];
 }
 
 export const parseParagraph = (paragraph: string): Paragraph => {
   let value = paragraph;
-  let fields: Field<string | Description>[] = [];
+  let fields: Field<string | Description | Dependency[]>[] = [];
 
   while (value.trim().length > 0) {
     const [field, rest] = parseField(value);
@@ -120,6 +158,9 @@ export const parseParagraph = (paragraph: string): Paragraph => {
   const description = fields.find(
     (v) => v.name === "Description"
   ) as Field<Description>;
+  const depends = fields.find((v) => v.name === "Depends") as
+    | Field<Dependency[]>
+    | undefined;
 
   if (!pkg) {
     throw new Error("Missing Package definition: " + paragraph);
@@ -134,8 +175,7 @@ export const parseParagraph = (paragraph: string): Paragraph => {
       synopsis: description.value.synopsis,
       description: description.value.description,
     },
-    depends: [],
-    dependants: [],
+    depends: depends?.value ?? [],
   };
 };
 
@@ -160,7 +200,21 @@ export const parseFile = (input: string): Package[] => {
     .filter((part) => part.trim().length > 0)
     .map(parseParagraph);
   data.sort((a, b) => a.name.localeCompare(b.name));
-  return data;
+
+  const installed = new Set(data.map((v) => v.name));
+  return data.map(({ name, description, depends }) => ({
+    name,
+    description,
+    depends: depends.map((value) => ({
+      name: value.name,
+      installed: installed.has(value.name),
+      alternatives: value.alternatives.map((v) => ({
+        name: v,
+        installed: installed.has(v),
+      })),
+    })),
+    dependants: [],
+  }));
 };
 
 export interface Package {
