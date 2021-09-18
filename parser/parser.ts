@@ -202,6 +202,17 @@ export const parseFile = (input: string): Package[] => {
   data.sort((a, b) => a.name.localeCompare(b.name));
 
   const installed = new Set(data.map((v) => v.name));
+
+  const dependants = data.reduce((deps: Record<string, string[]>, p) => {
+    p.depends.forEach((d) => {
+      if (!deps[d.name]) {
+        deps[d.name] = [];
+      }
+      deps[d.name].push(p.name);
+    });
+    return deps;
+  }, {});
+
   return data.map(({ name, description, depends }) => ({
     name,
     description,
@@ -213,7 +224,12 @@ export const parseFile = (input: string): Package[] => {
         installed: installed.has(v),
       })),
     })),
-    dependants: [],
+    dependants:
+      dependants[name]?.map((value) => ({
+        name: value,
+        installed: installed.has(value),
+        alternatives: [],
+      })) ?? [],
   }));
 };
 

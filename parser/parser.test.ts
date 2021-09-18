@@ -177,7 +177,7 @@ Source: distribute
 Version: 0.6.24-1ubuntu1
 Replaces: python2.3-setuptools, python2.4-setuptools
 Provides: python2.6-setuptools, python2.7-setuptools
-Depends: python (>= 2.6), python (<< 2.8)
+Depends: python (>= 2.6), python (<< 2.8), lsb-release
 Suggests: python-distribute, python-distribute-doc
 Conflicts: python-setuptools (<< 0.6c8-3), python2.3-setuptools (<< 0.6b2), python2.4-setuptools (<< 0.6b2)
 Description: Package Discovery and Resource Access using pkg_resources
@@ -248,6 +248,13 @@ Original-Maintainer: Chris Lawrence <lawrencc@debian.org>
       "python",
       "python2.7",
     ]);
-    expect(getDependencyNames(p3)).toStrictEqual(["python"]);
+    expect(getDependencyNames(p3)).toStrictEqual(["lsb-release", "python"]);
+  });
+
+  it("parses dependants", () => {
+    const getDependantNames = (p: Package) => p.dependants.map((v) => v.name);
+    expect(getDependantNames(p1)).toStrictEqual([]);
+    expect(getDependantNames(p2)).toStrictEqual(["python-pkg-resources"]);
+    expect(getDependantNames(p3)).toStrictEqual([]);
   });
 });
