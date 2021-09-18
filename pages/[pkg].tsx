@@ -62,7 +62,7 @@ const PackageDetails = (props: Props) => {
       <a href="/">Back to packages listing</a>
       <h1>{name}</h1>
       <h3>{description.synopsis}</h3>
-      <p>{description.description}</p>
+      <pre>{description.description}</pre>
       <References title="Depends on" references={depends} />
       <References title="Dependants" references={dependants} />
     </div>

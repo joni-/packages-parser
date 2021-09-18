@@ -13,7 +13,7 @@ exports[`PackageDetails with dependants only 1`] = `
   <h3>
     Package Discovery and Resource Access using pkg_resources
   </h3>
-  <p>
+  <pre>
     The pkg_resources module provides an API for Python libraries to
 access their resource files, and for extensible applications and
 frameworks to automatically discover plugins.  It also provides
@@ -21,7 +21,7 @@ runtime support for using C extensions that are inside zipfile-format
 eggs, support for merging packages that have separately-distributed
 modules or subpackages, and APIs for managing Python's current
 "working set" of active packages.
-  </p>
+  </pre>
   <h4>
     Dependants
   </h4>
@@ -64,7 +64,7 @@ exports[`PackageDetails with dependencies and dependants 1`] = `
   <h3>
     Package Discovery and Resource Access using pkg_resources
   </h3>
-  <p>
+  <pre>
     The pkg_resources module provides an API for Python libraries to
 access their resource files, and for extensible applications and
 frameworks to automatically discover plugins.  It also provides
@@ -72,7 +72,7 @@ runtime support for using C extensions that are inside zipfile-format
 eggs, support for merging packages that have separately-distributed
 modules or subpackages, and APIs for managing Python's current
 "working set" of active packages.
-  </p>
+  </pre>
   <h4>
     Depends on
   </h4>
@@ -165,7 +165,7 @@ exports[`PackageDetails with dependencies only 1`] = `
   <h3>
     Package Discovery and Resource Access using pkg_resources
   </h3>
-  <p>
+  <pre>
     The pkg_resources module provides an API for Python libraries to
 access their resource files, and for extensible applications and
 frameworks to automatically discover plugins.  It also provides
@@ -173,7 +173,7 @@ runtime support for using C extensions that are inside zipfile-format
 eggs, support for merging packages that have separately-distributed
 modules or subpackages, and APIs for managing Python's current
 "working set" of active packages.
-  </p>
+  </pre>
   <h4>
     Depends on
   </h4>
@@ -240,9 +240,9 @@ exports[`PackageDetails without dependencies or dependants 1`] = `
   <h3>
     Common utilities from the Apache Web Services Project
   </h3>
-  <p>
+  <pre>
     This is a small collection of utility classes, that allow high
 performance XML processing based on SAX.
-  </p>
+  </pre>
 </div>
 `;
