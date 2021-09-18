@@ -85,7 +85,7 @@ export const parseField = (
   return [{ name, value }, rest2];
 };
 
-interface Paragraph {
+export interface Paragraph {
   name: string;
   description: Description;
 }

@@ -1,7 +1,30 @@
-import type { NextPage } from "next";
+import type { GetServerSideProps, NextPage } from "next";
+import { paragraphs } from "../mocks";
+import { Paragraph } from "../parser/parser";
 
-const Home: NextPage = () => {
-  return <h1>Display packages list here</h1>;
+interface Props {
+  paragraphs: Paragraph[];
+}
+
+const Home: NextPage<Props> = (props) => {
+  return (
+    <div>
+      <h1>Packages</h1>
+      <ul>
+        {props.paragraphs.map((p) => (
+          <li key={p.name}>
+            <a href={`/${p.name}`}>{p.name}</a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 };
 
 export default Home;
+
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  return {
+    props: { paragraphs },
+  };
+};

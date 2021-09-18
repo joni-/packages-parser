@@ -1,7 +1,25 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Home renders page without changes 1`] = `
-<h1>
-  Display packages list here
-</h1>
+<div>
+  <h1>
+    Packages
+  </h1>
+  <ul>
+    <li>
+      <a
+        href="/libws-commons-util-java"
+      >
+        libws-commons-util-java
+      </a>
+    </li>
+    <li>
+      <a
+        href="/python-pkg-resources"
+      >
+        python-pkg-resources
+      </a>
+    </li>
+  </ul>
+</div>
 `;
