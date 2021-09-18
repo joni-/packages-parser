@@ -6,7 +6,7 @@ interface Props {
   paragraphs: Paragraph[];
 }
 
-const Home: NextPage<Props> = (props) => {
+const PackageListing: NextPage<Props> = (props) => {
   return (
     <div>
       <h1>Packages</h1>
@@ -21,7 +21,7 @@ const Home: NextPage<Props> = (props) => {
   );
 };
 
-export default Home;
+export default PackageListing;
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
   return {
