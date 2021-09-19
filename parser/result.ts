@@ -1,3 +1,10 @@
+/**
+ * Types & functions for operating on Result type. Compared to throwing exceptions,
+ * this makes the program more robust as it forces the caller to handle the errors.
+ *
+ * See more, for example at https://en.wikipedia.org/wiki/Result_type
+ */
+
 type ResultType = "success" | "failure";
 
 interface BaseResult {

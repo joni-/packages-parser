@@ -5,9 +5,10 @@
  * try to parse desired value from the beginning of the input and return the parsed
  * value and the leftover input that can be fed to the next parser.
  */
+
 import { findDuplicates, isEmpty, trim, uniqBy } from "../util";
 import { failure, isFailure, map, Result, success } from "./result";
-import { Description, Package } from "./types";
+import { Description, Package, PackageName } from "./types";
 
 type ParseResult<T> = Result<[T, string]>;
 type Parser<T> = (input: string) => ParseResult<T>;
@@ -23,7 +24,6 @@ interface Dependency {
 }
 
 type FieldName = string;
-type PackageName = string;
 
 interface Field<T> {
   name: FieldName;

@@ -1,5 +1,7 @@
+export type PackageName = string;
+
 export interface Package {
-  name: string;
+  name: PackageName;
   description: Description;
   depends: Reference[];
   dependants: Reference[];
