@@ -1,3 +1,43 @@
+# Packages file parser
+
+The application parses and displays details about software packages in Debian control file (see example file [./status.real](./status.real)). Implemented using [nextjs](https://nextjs.org/).
+
+<img src="./screenshot-listing.png" width="400"/>
+<img src="./screenshot-details.png" width="400"/>
+
+Main components:
+
+- [./parser/parser.ts](./parser/parser.ts): responsible for parsing the control file
+- [./pages/index.tsx](./pages/index.tsx): renders package listing
+- [./pages/[pkg].tsx](./pages/[pkg].tsx): renders details about a single package
+
+Pages are rendered on the server side. Data fetching is done by `getServerSideProps` functions found in each page component.
+
+## Development
+
+Tested with node v14.17.6 (LTS).
+
+### Install dependencies
+
+```
+npm i
+```
+
+### Run the dev server
+
+```
+npm run dev
+```
+
+### Start up the prod build
+
+```
+npm run build
+npm run start
+```
+
+The app runs on port 8080.
+
 ## Problem description
 
 On a Debian or an Ubuntu system there is a file called /var/lib/dpkg/status that holds information about software packages that the system knows about. Write a small program that exposes some key information about currently installed packages via a html interface. The program should listen to http requests on port 8080 on localhost and provide the following features:
