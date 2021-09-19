@@ -5,11 +5,20 @@ import {
   parseName,
   parseParagraph,
 } from "./parser";
+import { isFailure, Result } from "./result";
 import { Description, Package } from "./types";
+
+const getValue = <T>(result: Result<T>): T => {
+  if (isFailure(result)) {
+    fail(`Expected ${result} to be Success`);
+  } else {
+    return result.value;
+  }
+};
 
 describe("parseName", () => {
   it("parses correct attribute name", () => {
-    const [name, _] = parseName("Package: libws-commons-util-java");
+    const [name, _] = getValue(parseName("Package: libws-commons-util-java"));
     expect(name).toBe("Package");
   });
 });
@@ -17,8 +26,8 @@ describe("parseName", () => {
 describe("parseField", () => {
   describe("simple field", () => {
     it("works", () => {
-      const [{ name, value }, _] = parseField(
-        "Package: libws-commons-util-java\n"
+      const [{ name, value }, _] = getValue(
+        parseField("Package: libws-commons-util-java\n")
       );
       expect(name).toBe("Package");
       expect(value).toBe("libws-commons-util-java");
@@ -36,7 +45,7 @@ describe("parseField", () => {
  .
  Hello `;
 
-      const [{ name, value }, _] = parseField(input);
+      const [{ name, value }, _] = getValue(parseField(input));
       const description = value as Description;
 
       expect(name).toBe("Description");
@@ -44,7 +53,7 @@ describe("parseField", () => {
         "Common utilities from the Apache Web Services Project"
       );
       expect(description.description)
-        .toBe(`This is a small collection of utility classes, that allow high performance XML processing based on SAX.
+        .toEqual(`This is a small collection of utility classes, that allow high performance XML processing based on SAX.
 
 Testing 123
 
@@ -56,13 +65,15 @@ Hello`);
 describe("parseDependencies", () => {
   describe("without alternatives", () => {
     it("single dependency", () => {
-      const [value, _] = parseDependencies(" debconf (>= 0.5) ");
+      const [value, _] = getValue(parseDependencies(" debconf (>= 0.5) "));
       expect(value).toStrictEqual([{ name: "debconf", alternatives: [] }]);
     });
 
     it("multiple dependencies", () => {
-      const [value, _] = parseDependencies(
-        " bsh (= 2.0b4-12build1), libgcj-common (>> 1:4.1.1-13), libc6 (>= 2.2.5), libgcc1 (>= 1:4.1.1), libgcj-bc (>= 4.4.5-1~)"
+      const [value, _] = getValue(
+        parseDependencies(
+          " bsh (= 2.0b4-12build1), libgcj-common (>> 1:4.1.1-13), libc6 (>= 2.2.5), libgcc1 (>= 1:4.1.1), libgcj-bc (>= 4.4.5-1~)"
+        )
       );
       expect(value).toStrictEqual([
         { name: "bsh", alternatives: [] },
@@ -76,8 +87,10 @@ describe("parseDependencies", () => {
 
   describe("with alternatives", () => {
     it("single dependency", () => {
-      const [value, _] = parseDependencies(
-        " default-jre-headless | java2-runtime-headless | java5-runtime-headless | java6-runtime-headless "
+      const [value, _] = getValue(
+        parseDependencies(
+          " default-jre-headless | java2-runtime-headless | java5-runtime-headless | java6-runtime-headless "
+        )
       );
       expect(value).toStrictEqual([
         {
@@ -92,8 +105,10 @@ describe("parseDependencies", () => {
     });
 
     it("multiple dependencies", () => {
-      const [value, _] = parseDependencies(
-        " default-jre-headless | java2-runtime-headless | java5-runtime-headless | java6-runtime-headless,bsh (= 2.0b4-12build1) "
+      const [value, _] = getValue(
+        parseDependencies(
+          " default-jre-headless | java2-runtime-headless | java5-runtime-headless | java6-runtime-headless,bsh (= 2.0b4-12build1) "
+        )
       );
       expect(value).toStrictEqual([
         { name: "bsh", alternatives: [] },
@@ -132,7 +147,7 @@ Conffiles:
  /etc/modprobe.d/blacklist-framebuffer.conf 96f2f501cc646b598263693c8976ddd1
 `.trim();
 
-    const result = parseParagraph(paragraph);
+    const result = getValue(parseParagraph(paragraph));
 
     expect(result.name).toBe("libws-commons-util-java");
     expect(result.description.synopsis).toBe(
@@ -152,9 +167,8 @@ Description: Common utilities from the Apache Web Services Project
 Package: duplicate key
 `.trim();
 
-    expect(() => {
-      parseParagraph(paragraph);
-    }).toThrow(new Error("Duplicate keys found: Package"));
+    const result = parseParagraph(paragraph);
+    expect(isFailure(result)).toBeTruthy();
   });
 });
 
@@ -234,7 +248,7 @@ Original-Maintainer: Chris Lawrence <lawrencc@debian.org>
   let p3: Package;
 
   beforeEach(() => {
-    const result = parseFile(input);
+    const result = getValue(parseFile(input));
     expect(result.length).toBe(3);
     p1 = result[0];
     p2 = result[1];

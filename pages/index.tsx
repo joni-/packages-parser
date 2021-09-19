@@ -1,6 +1,7 @@
 import type { GetServerSideProps, NextPage } from "next";
 import { Package } from "../parser/types";
 import { listPackages } from "../parser/reader";
+import { isFailure } from "../parser/result";
 
 interface Props {
   packages: Package[];
@@ -24,8 +25,13 @@ const PackageListing: NextPage<Props> = (props) => {
 export default PackageListing;
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
-  const packages = await listPackages();
+  const result = await listPackages();
+
+  if (isFailure(result)) {
+    throw new Error(result.message);
+  }
+
   return {
-    props: { packages },
+    props: { packages: result.value },
   };
 };

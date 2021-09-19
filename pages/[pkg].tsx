@@ -1,9 +1,10 @@
 import { Package, Reference } from "../parser/types";
 import { GetServerSideProps } from "next";
 import { findPackage } from "../parser/reader";
+import { isFailure } from "../parser/result";
 
 interface Props {
-  packages: Package;
+  package: Package;
 }
 
 const Alternatives = ({
@@ -56,7 +57,7 @@ const References = ({
 };
 
 const PackageDetails = (props: Props) => {
-  const { name, description, depends, dependants } = props.packages;
+  const { name, description, depends, dependants } = props.package;
   return (
     <div>
       <a href="/">Back to packages listing</a>
@@ -82,8 +83,15 @@ export const getServerSideProps: GetServerSideProps<Props> = async (
     };
   }
 
-  const packages = await findPackage(pkg);
+  const result = await findPackage(pkg);
+
+  if (isFailure(result)) {
+    throw new Error(result.message);
+  } else if (result.value === null) {
+    return { notFound: true };
+  }
+
   return {
-    props: { packages },
+    props: { package: result.value },
   };
 };

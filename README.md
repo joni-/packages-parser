@@ -36,7 +36,12 @@ npm run build
 npm run start
 ```
 
-The app runs on port 8080.
+The app runs on http://localhost:8080.
+
+## Improvements
+
+- Simplify & clean tests for parser
+- Better mapping functions over `Result<T>` to get rid of unnecessary `isFailure()` calls in parser.ts
 
 ## Problem description
 
