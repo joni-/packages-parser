@@ -5,6 +5,7 @@
  * try to parse desired value from the beginning of the input and return the parsed
  * value and the leftover input that can be fed to the next parser.
  */
+import { findDuplicates, isEmpty, trim, uniqBy } from "../util";
 import { failure, isFailure, map, Result, success } from "./result";
 import { Description, Package } from "./types";
 
@@ -31,9 +32,6 @@ interface Paragraph {
   description: Description;
   depends: Dependency[];
 }
-
-const isEmpty = <T>(v: string | T[]) =>
-  Array.isArray(v) ? v.length === 0 : v.trim().length === 0;
 
 const parseUntil =
   (target: string, failIfNoMatch = true) =>
@@ -141,18 +139,7 @@ const parseDescription = (input: string): ParseResult<Description> => {
   return success([{ synopsis, description }, rest]);
 };
 
-const trim = (s: string) => s.trim();
 const removeVersion = (s: string) => s.split(" ")[0];
-
-// note: if there are duplicated values, keeps the last occurrence
-const uniqBy = <T>(getKey: (v: T) => string, input: T[]): T[] => {
-  const xs = input.reduce((acc: Record<string, T>, current) => {
-    const k = getKey(current);
-    acc[k] = current;
-    return acc;
-  }, {});
-  return Object.values(xs);
-};
 
 export const parseDependencies = (input: string): ParseResult<Dependency[]> => {
   const result = parseSimpleValue(input);
@@ -235,7 +222,7 @@ export const parseParagraph = (paragraph: string): Result<Paragraph> => {
     value = rest;
   }
 
-  const duplicates = findDuplicates(fields);
+  const duplicates = findDuplicates((field) => field.name, fields);
   if (!isEmpty(duplicates)) {
     return failure(`Duplicate keys found: ${duplicates.join(", ")}`);
   }
@@ -266,21 +253,6 @@ export const parseParagraph = (paragraph: string): Result<Paragraph> => {
     },
     depends: depends?.value ?? [],
   });
-};
-
-const findDuplicates = (fields: Field<unknown>[]): string[] => {
-  const counts = fields
-    .map((v) => v.name)
-    .reduce((keys: Record<string, number>, k) => {
-      keys[k] = (keys[k] ?? 0) + 1;
-      return keys;
-    }, {});
-
-  const duplicateKeys = Object.entries(counts)
-    .filter(([_, count]) => count > 1)
-    .map(([k, _]) => k);
-
-  return duplicateKeys;
 };
 
 export const parseFile = (input: string): Result<Package[]> => {
