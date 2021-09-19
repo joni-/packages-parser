@@ -2,6 +2,7 @@ import { Package, Reference } from "../parser/types";
 import { GetServerSideProps } from "next";
 import { findPackage } from "../parser/reader";
 import { isFailure } from "../parser/result";
+import { isEmpty } from "../util";
 
 interface Props {
   package: Package;
@@ -12,7 +13,7 @@ const Alternatives = ({
 }: {
   alternatives: Reference["alternatives"];
 }) => {
-  if (alternatives.length === 0) {
+  if (isEmpty(alternatives)) {
     return null;
   }
   return (
@@ -37,7 +38,7 @@ const References = ({
   title: string;
   references: Reference[];
 }) => {
-  if (references.length === 0) {
+  if (isEmpty(references)) {
     return null;
   }
   return (

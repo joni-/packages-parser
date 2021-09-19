@@ -254,21 +254,21 @@ export const parseParagraph = (paragraph: string): Result<Paragraph> => {
 
 export const parseFile = (input: string): Result<Package[]> => {
   const parts = input.split("\n\n");
-  let data: Paragraph[] = [];
+  let paragraphs: Paragraph[] = [];
 
   for (const part of parts.filter((p) => !isEmpty(p))) {
     const result = parseParagraph(part);
     if (isFailure(result)) {
       return result;
     }
-    data.push(result.value);
+    paragraphs.push(result.value);
   }
 
-  data.sort((a, b) => a.name.localeCompare(b.name));
+  paragraphs.sort((a, b) => a.name.localeCompare(b.name));
 
-  const installed = new Set(data.map((v) => v.name));
+  const installedPackages = new Set(paragraphs.map((v) => v.name));
 
-  const dependants = data.reduce((deps: Record<string, string[]>, p) => {
+  const dependants = paragraphs.reduce<Record<string, string[]>>((deps, p) => {
     p.depends.forEach((d) => {
       if (!deps[d.name]) {
         deps[d.name] = [];
@@ -279,21 +279,21 @@ export const parseFile = (input: string): Result<Package[]> => {
   }, {});
 
   return success(
-    data.map(({ name, description, depends }) => ({
+    paragraphs.map(({ name, description, depends }) => ({
       name,
       description,
-      depends: depends.map((value) => ({
-        name: value.name,
-        installed: installed.has(value.name),
-        alternatives: value.alternatives.map((v) => ({
-          name: v,
-          installed: installed.has(v),
+      depends: depends.map((dependency) => ({
+        name: dependency.name,
+        installed: installedPackages.has(dependency.name),
+        alternatives: dependency.alternatives.map((altName) => ({
+          name: altName,
+          installed: installedPackages.has(altName),
         })),
       })),
       dependants:
-        dependants[name]?.map((value) => ({
-          name: value,
-          installed: installed.has(value),
+        dependants[name]?.map((dependantName) => ({
+          name: dependantName,
+          installed: installedPackages.has(dependantName),
           alternatives: [],
         })) ?? [],
     }))
