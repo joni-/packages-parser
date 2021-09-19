@@ -17,19 +17,19 @@ Pages are rendered on the server side. Data fetching is done by `getServerSidePr
 
 Tested with node v14.17.6 (LTS).
 
-### Install dependencies
+#### Install dependencies
 
 ```
 npm i
 ```
 
-### Run the dev server
+#### Run the dev server
 
 ```
 npm run dev
 ```
 
-### Start up the prod build
+#### Start up the prod build
 
 ```
 npm run build
@@ -38,9 +38,11 @@ npm run start
 
 The app runs on http://localhost:8080.
 
+File path for the packages file can be configured usin `PACKAGES_FILE` env variable, e.g. `PACKAGES_FILE=/tmp/packages.txt npm run dev`. By default it reads [./status.real](./status.real).
+
 ## Improvements
 
-- Simplify & clean tests for parser
+- Simplify & clean tests for parser, write more comprehensive tests
 - Better mapping functions over `Result<T>` to get rid of unnecessary `isFailure()` calls in parser.ts
 - Handle comments in the control file
 - Add error page instead of throwing exceptions

@@ -8,7 +8,7 @@ import { Package } from "./types";
 // had problems with it as it tried to import it client-side.
 const readFile = promisify(legacyReadFile);
 
-const PACKAGES_FILE_PATH = "./status.real";
+const PACKAGES_FILE_PATH = process.env.PACKAGES_FILE || "./status.real";
 
 let cache: Package[] | null = null;
 
