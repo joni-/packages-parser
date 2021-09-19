@@ -242,9 +242,6 @@ export const parseParagraph = (paragraph: string): Result<Paragraph> => {
     return failure(`Missing Package definition: ${paragraph}`);
   }
 
-  // TODO:
-  // - handle comments
-
   return success({
     name: pkg.value,
     description: {

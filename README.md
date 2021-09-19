@@ -42,6 +42,7 @@ The app runs on http://localhost:8080.
 
 - Simplify & clean tests for parser
 - Better mapping functions over `Result<T>` to get rid of unnecessary `isFailure()` calls in parser.ts
+- Handle comments in the control file
 
 ## Problem description
 
