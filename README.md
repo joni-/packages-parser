@@ -46,7 +46,6 @@ File path for the packages file can be configured usin `PACKAGES_FILE` env varia
 - Better mapping functions over `Result<T>` to get rid of unnecessary `isFailure()` calls in parser.ts
 - Handle comments in the control file
 - Add error page instead of throwing exceptions
-- Make description required field
 
 ## Problem description
 

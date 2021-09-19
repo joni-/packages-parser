@@ -222,14 +222,14 @@ const parsePackageField = (input: string): ParseResult<PackageName> => {
   return success([name, rest]);
 };
 
-// define fields that use other parser than parseSimpleValue
+// define fields that use non-default parser
 const PARSERS: Record<
   string,
   Parser<Description | Dependency[] | PackageName>
 > = {
-  Description: parseDescription,
-  Depends: parseDependencies,
-  Package: parsePackageField,
+  description: parseDescription,
+  depends: parseDependencies,
+  package: parsePackageField,
 };
 
 export const parseField = (
@@ -256,9 +256,9 @@ export const parseField = (
   const defaultParser = isContinuationLine(nextLine)
     ? parseMultilineValue
     : parseSimpleValue;
-  const parseValue = (PARSERS[name] ?? defaultParser) as Parser<
-    string | Description | Dependency[]
-  >;
+
+  // Use either specific parser for this field or default parser
+  const parseValue = PARSERS[name.toLowerCase()] ?? defaultParser;
 
   const valueResult = parseValue(rest);
 
@@ -291,19 +291,25 @@ export const parseParagraph = (paragraph: string): Result<Paragraph> => {
     return failure(`Duplicate keys found: ${duplicates.join(", ")}`);
   }
 
-  // TODO: find a better way for finding the known fields without type casting..
+  // Find the needed fields required for building Paragraph. This needs
+  // some tweaking so the type casts could be removed. Somehow the
+  // field type should be inferred based on the name of the field.
   const pkg = fields.find((v) => v.name === "Package") as
-    | Field<string>
+    | Field<PackageName>
     | undefined;
-  const description = fields.find(
-    (v) => v.name === "Description"
-  ) as Field<Description>;
+  const description = fields.find((v) => v.name === "Description") as
+    | Field<Description>
+    | undefined;
   const depends = fields.find((v) => v.name === "Depends") as
     | Field<Dependency[]>
     | undefined;
 
   if (!pkg) {
     return failure(`Missing Package definition: ${paragraph}`);
+  }
+
+  if (!description) {
+    return failure(`Missing Description definition: ${paragraph}`);
   }
 
   return success({
