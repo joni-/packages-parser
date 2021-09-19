@@ -37,6 +37,16 @@ describe("parseField", () => {
       expect(name).toBe("Package");
       expect(value).toBe("libws-commons-util-java");
     });
+
+    describe("Package field", () => {
+      it.each(["", "a", "aBC", "foo,", "+foo"])(
+        "should fail on invalid package name %s",
+        (pkg) => {
+          const result = parseField(`Package: ${pkg}`);
+          expect(isFailure(result)).toBeTruthy();
+        }
+      );
+    });
   });
 
   describe("multiline field", () => {

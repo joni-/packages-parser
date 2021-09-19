@@ -23,6 +23,7 @@ interface Dependency {
 }
 
 type FieldName = string;
+type PackageName = string;
 
 interface Field<T> {
   name: FieldName;
@@ -30,7 +31,7 @@ interface Field<T> {
 }
 
 interface Paragraph {
-  name: string;
+  name: PackageName;
   description: Description;
   depends: Dependency[];
 }
@@ -192,10 +193,43 @@ export const parseDependencies = (input: string): ParseResult<Dependency[]> => {
   }, result);
 };
 
+const alphanumeric = [
+  charRange("a".charCodeAt(0), "z".charCodeAt(0)),
+  charRange("0".charCodeAt(0), "9".charCodeAt(0)),
+].flat();
+
+const allowedPackageNameChars = alphanumeric.concat(["+", "-", "."]);
+
+const parsePackageField = (input: string): ParseResult<PackageName> => {
+  const result = parseSimpleValue(input);
+
+  if (isFailure(result)) {
+    return result;
+  }
+
+  const [name, rest] = result.value;
+
+  const validLength = name.length >= 2;
+  const alphanumericStart = alphanumeric.includes(name[0]);
+  const allCharsAllowed = name
+    .split("")
+    .every((c) => allowedPackageNameChars.includes(c));
+
+  if (!validLength || !alphanumericStart || !allCharsAllowed) {
+    return failure(`Invalid package name ${name}`);
+  }
+
+  return success([name, rest]);
+};
+
 // define fields that use other parser than parseSimpleValue
-const PARSERS: Record<string, Parser<Description> | Parser<Dependency[]>> = {
+const PARSERS: Record<
+  string,
+  Parser<Description | Dependency[] | PackageName>
+> = {
   Description: parseDescription,
   Depends: parseDependencies,
+  Package: parsePackageField,
 };
 
 export const parseField = (
