@@ -29,7 +29,12 @@ describe("parseField", () => {
     it("description", () => {
       const input = `Description: Common utilities from the Apache Web Services Project
  This is a small collection of utility classes, that allow high
- performance XML processing based on SAX.\n`;
+ performance XML processing based on SAX.
+ .
+ Testing
+ 123
+ .
+ Hello `;
 
       const [{ name, value }, _] = parseField(input);
       const description = value as Description;
@@ -39,8 +44,11 @@ describe("parseField", () => {
         "Common utilities from the Apache Web Services Project"
       );
       expect(description.description)
-        .toBe(`This is a small collection of utility classes, that allow high
-performance XML processing based on SAX.`);
+        .toBe(`This is a small collection of utility classes, that allow high performance XML processing based on SAX.
+
+Testing 123
+
+Hello`);
     });
   });
 });
@@ -130,9 +138,9 @@ Conffiles:
     expect(result.description.synopsis).toBe(
       "Common utilities from the Apache Web Services Project"
     );
-    expect(result.description.description)
-      .toBe(`This is a small collection of utility classes, that allow high
-performance XML processing based on SAX.`);
+    expect(result.description.description).toBe(
+      `This is a small collection of utility classes, that allow high performance XML processing based on SAX.`
+    );
   });
 
   it("fails on duplicate keys", () => {

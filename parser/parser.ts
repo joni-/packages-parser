@@ -26,6 +26,9 @@ interface Paragraph {
   depends: Dependency[];
 }
 
+const isEmpty = <T>(v: string | T[]) =>
+  Array.isArray(v) ? v.length === 0 : v.trim().length === 0;
+
 const parseUntil =
   (target: string, failIfNoMatch = true) =>
   (input: string): ParseResult<string> => {
@@ -57,21 +60,58 @@ const parseSimpleValue = (input: string): ParseResult<string> => {
 
 const isContinuationLine = (s: string) => s.length > 0 && s[0] === " ";
 
-const parseMultilineValue = (input: string): ParseResult<string> => {
+const parseMultilineValue = (input: string): ParseResult<string[]> => {
   let [value, rest] = parseLine(input);
+  let lines = [value];
 
   if (isContinuationLine(rest)) {
     const [value2, rest2] = parseMultilineValue(rest);
-    value = value.trim() + "\n" + value2;
+    lines = lines.concat(value2);
     rest = rest2;
   }
 
-  return [value.trim(), rest];
+  return [lines, rest];
 };
+
+const isParagraphLine = (line: string) =>
+  !line.startsWith(" ") && !isEmpty(line);
 
 const parseDescription = (input: string): ParseResult<Description> => {
   const [value, rest] = parseMultilineValue(input);
-  const [synopsis, description] = parseLine(value);
+
+  if (value.length === 0) {
+    throw Error("Could not parse" + input);
+  }
+
+  const synopsis = value[0].trim();
+  const description = value
+    .slice(1)
+    .map((line) => {
+      // Single space and full stop is the only way to render a blank line
+      if (line === " .") {
+        return "\n\n";
+      }
+
+      // Keep the whitespace as is if the line starts with two or more spaces
+      if (line.startsWith("  ")) {
+        return line + "\n";
+      }
+
+      // Line is part of a paragraph
+      return line.trim();
+    })
+    .map((line, i, lines) => {
+      // Setup spaces between paragraph components
+      const isLastLine = i === lines.length - 1;
+      if (!isLastLine && isParagraphLine(line)) {
+        const nextLine = lines[i + 1];
+        if (isParagraphLine(nextLine)) {
+          return line + " ";
+        }
+      }
+      return line;
+    })
+    .join("");
   return [{ synopsis, description }, rest];
 };
 
@@ -131,14 +171,14 @@ export const parseParagraph = (paragraph: string): Paragraph => {
   let value = paragraph;
   let fields: Field<string | Description | Dependency[]>[] = [];
 
-  while (value.trim().length > 0) {
+  while (!isEmpty(value)) {
     const [field, rest] = parseField(value);
     fields.push(field);
     value = rest;
   }
 
   const duplicates = findDuplicates(fields);
-  if (duplicates.length > 0) {
+  if (!isEmpty(duplicates)) {
     throw new Error(`Duplicate keys found: ${duplicates.join(", ")}`);
   }
 
@@ -187,9 +227,7 @@ const findDuplicates = (fields: Field<unknown>[]): string[] => {
 
 export const parseFile = (input: string): Package[] => {
   const parts = input.split("\n\n");
-  const data = parts
-    .filter((part) => part.trim().length > 0)
-    .map(parseParagraph);
+  const data = parts.filter((part) => !isEmpty(part)).map(parseParagraph);
   data.sort((a, b) => a.name.localeCompare(b.name));
 
   const installed = new Set(data.map((v) => v.name));
