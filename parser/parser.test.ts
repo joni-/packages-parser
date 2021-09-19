@@ -21,6 +21,11 @@ describe("parseName", () => {
     const [name, _] = getValue(parseName("Package: libws-commons-util-java"));
     expect(name).toBe("Package");
   });
+
+  it.each(["#foo", "-foo", `foo😀bar`])("should fail on name %s", (name) => {
+    const result = parseName(`${name}: value`);
+    expect(isFailure(result)).toBeTruthy();
+  });
 });
 
 describe("parseField", () => {

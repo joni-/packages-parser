@@ -22,8 +22,10 @@ interface Dependency {
   alternatives: string[];
 }
 
+type FieldName = string;
+
 interface Field<T> {
-  name: string;
+  name: FieldName;
   value: T;
 }
 
@@ -51,10 +53,38 @@ const parseUntil =
 
 const parseLine = parseUntil("\n", false);
 
-export const parseName = (input: string): ParseResult<string> => {
+const charRange = (from: number, to: number): string[] =>
+  Array(to - from + 1)
+    .fill(null)
+    .map((_, i) => String.fromCharCode(from + i));
+
+const disallowedStartingChars = [0x0023, 0x002d];
+const allowedChars = [
+  charRange(0x0021, 0x0039),
+  charRange(0x003b, 0x007e),
+].flat();
+
+export const parseName = (input: string): ParseResult<FieldName> => {
   const result = parseUntil(":")(input);
-  // TODO: validate that name conforms the specification
-  return result;
+
+  if (isFailure(result)) {
+    return result;
+  }
+
+  const [name, rest] = result.value;
+
+  if (isEmpty(name)) {
+    return failure(`Field name cannot be empty`);
+  }
+
+  const allCharsAllowed = name.split("").every((c) => allowedChars.includes(c));
+  const validFirstChar = !disallowedStartingChars.includes(name.charCodeAt(0));
+
+  if (!allCharsAllowed || !validFirstChar) {
+    return failure(`Invalid field name ${name}`);
+  }
+
+  return success([name, rest]);
 };
 
 const parseSimpleValue = (input: string): ParseResult<string> => {
